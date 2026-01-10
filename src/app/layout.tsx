@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Providers from "./providers";
 
 const hankenGrotesk = localFont({
   src: [
@@ -112,7 +113,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${hankenGrotesk.variable} font-sans antialiased`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

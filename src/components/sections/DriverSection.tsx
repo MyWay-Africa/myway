@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Button } from "@/components/ui";
 
 // Features data
 const features = [
@@ -126,9 +127,9 @@ export default function DriverSection() {
             </div>
 
             {/* CTA Button */}
-            <button className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg hover:bg-gray-100 transition-colors duration-200">
+            <Button variant="light" size="lg" className="font-semibold">
               Join Driver Waitlist
-            </button>
+            </Button>
           </div>
 
           {/* Right side - Image */}

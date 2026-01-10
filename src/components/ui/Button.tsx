@@ -1,12 +1,30 @@
-import { ButtonHTMLAttributes, forwardRef } from "react";
+import Link from "next/link";
+import { AnchorHTMLAttributes, ButtonHTMLAttributes, forwardRef } from "react";
 
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost" | "danger";
-type ButtonSize = "sm" | "md" | "lg";
+type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "outline"
+  | "ghost"
+  | "danger"
+  | "dark"
+  | "light"
+  | "outlineDark"
+  | "outlineLight";
+type ButtonSize = "sm" | "md" | "lg" | "xl";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   isLoading?: boolean;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+}
+
+interface ButtonLinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
+  href: string;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
 }
@@ -21,12 +39,19 @@ const variantStyles: Record<ButtonVariant, string> = {
   ghost: "text-gray-600 hover:bg-gray-100 focus:ring-gray-500",
   danger:
     "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm",
+  dark: "bg-gray-900 text-white hover:bg-gray-800 focus:ring-gray-900 shadow-sm",
+  light: "bg-white text-gray-900 hover:bg-gray-100 focus:ring-gray-300 shadow-sm",
+  outlineDark:
+    "border-2 border-gray-900 text-gray-900 hover:bg-gray-50 focus:ring-gray-900",
+  outlineLight:
+    "border-2 border-white/30 text-white hover:bg-white/10 focus:ring-white/50",
 };
 
 const sizeStyles: Record<ButtonSize, string> = {
   sm: "px-3 py-1.5 text-sm",
   md: "px-4 py-2 text-base",
   lg: "px-6 py-3 text-lg",
+  xl: "px-8 py-4 text-base",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
@@ -54,6 +79,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           transition-all duration-200
           focus:outline-none focus:ring-2 focus:ring-offset-2
           disabled:opacity-50 disabled:cursor-not-allowed
+          cursor-pointer
           ${variantStyles[variant]}
           ${sizeStyles[size]}
           ${className}
@@ -93,4 +119,44 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
 Button.displayName = "Button";
 
+const ButtonLink = forwardRef<HTMLAnchorElement, ButtonLinkProps>(
+  (
+    {
+      children,
+      href,
+      variant = "primary",
+      size = "md",
+      leftIcon,
+      rightIcon,
+      className = "",
+      ...props
+    },
+    ref
+  ) => {
+    return (
+      <Link
+        href={href}
+        ref={ref}
+        className={`
+          inline-flex items-center justify-center gap-2
+          font-medium rounded-lg
+          transition-all duration-200
+          focus:outline-none focus:ring-2 focus:ring-offset-2
+          ${variantStyles[variant]}
+          ${sizeStyles[size]}
+          ${className}
+        `}
+        {...props}
+      >
+        {leftIcon}
+        {children}
+        {rightIcon}
+      </Link>
+    );
+  }
+);
+
+ButtonLink.displayName = "ButtonLink";
+
 export default Button;
+export { ButtonLink };

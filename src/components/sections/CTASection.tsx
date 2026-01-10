@@ -1,5 +1,7 @@
 "use client";
 
+import { Button } from "@/components/ui";
+
 export default function CTASection() {
   return (
     <section className="relative py-20 md:py-28 bg-white overflow-hidden">
@@ -71,12 +73,12 @@ export default function CTASection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          <button className="px-8 py-3 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors duration-200 min-w-[200px]">
+          <Button variant="dark" size="lg" className="min-w-[200px] font-semibold">
             Join the Waitlist
-          </button>
-          <button className="px-8 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-gray-900 hover:bg-gray-50 transition-colors duration-200 min-w-[200px]">
+          </Button>
+          <Button variant="outlineDark" size="lg" className="min-w-[200px] font-semibold">
             I&apos;d like to partner / Invest
-          </button>
+          </Button>
         </div>
 
         {/* Tagline */}

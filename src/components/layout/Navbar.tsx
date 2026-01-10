@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { Button, ButtonLink } from "@/components/ui";
 
 interface SubMenuItem {
   icon: React.ReactNode;
@@ -189,6 +190,7 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
   const [isAnimating, setIsAnimating] = useState(false);
   const [slideDirection, setSlideDirection] = useState<"left" | "right">("right");
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const isTransparent = variant === "transparent";
 
@@ -199,8 +201,6 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
       requestAnimationFrame(() => {
         setMenuVisible(true);
       });
-    } else {
-      setMenuVisible(false);
     }
   }, [isMobileMenuOpen]);
 
@@ -383,18 +383,22 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
 
             {/* Desktop CTA Buttons */}
             <div className="hidden lg:flex items-center gap-3">
-              <Link
-                href="/login"
-                className="px-5 py-2.5 text-sm font-medium text-white border border-white/30 rounded-lg hover:bg-white/10 transition-colors"
+              <Button
+                variant="outlineLight"
+                size="md"
+                className="px-5 py-2.5 text-sm"
+                onClick={() => setIsLoginModalOpen(true)}
               >
                 Log In
-              </Link>
-              <Link
+              </Button>
+              <ButtonLink
                 href="/waitlist"
-                className="px-5 py-2.5 text-sm font-medium text-black bg-white rounded-lg hover:bg-gray-100 transition-colors"
+                variant="light"
+                size="md"
+                className="px-5 py-2.5 text-sm"
               >
                 Join the Waitlist
-              </Link>
+              </ButtonLink>
             </div>
 
             {/* Mobile menu button */}
@@ -560,6 +564,66 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
           </div>
         )}
       </nav>
+
+      {/* Login Modal */}
+      {isLoginModalOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setIsLoginModalOpen(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 p-8 animate-[scaleIn_0.3s_ease-out]">
+            {/* Close Button */}
+            <button
+              onClick={() => setIsLoginModalOpen(false)}
+              className="absolute top-4 right-4 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-all"
+              aria-label="Close modal"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Logo/Icon */}
+            <div className="flex justify-center mb-6">
+              <div className="relative w-24 h-24">
+                <div className="absolute inset-0 rounded-full border-4 border-cyan-400/30" />
+                <div className="absolute inset-2 rounded-full border-4 border-cyan-500/50" />
+                <div className="absolute inset-4 rounded-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                  <span className="text-white text-3xl font-bold">3</span>
+                </div>
+                <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-cyan-400 rounded-t-full opacity-60" />
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-4 bg-cyan-400 rounded-b-full opacity-60" />
+              </div>
+            </div>
+
+            {/* Text Content */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+                We&apos;re preparing something exceptional.
+              </h2>
+              <p className="text-gray-500">
+                MyWay is launching soon in Lagos.<br />
+                Join the waitlist to get early access when we go live.
+              </p>
+            </div>
+
+            {/* CTA Button */}
+            <ButtonLink
+              href="/waitlist"
+              variant="dark"
+              size="xl"
+              className="w-full rounded-xl font-medium"
+              onClick={() => setIsLoginModalOpen(false)}
+            >
+              Join the Waitlist
+            </ButtonLink>
+          </div>
+        </div>
+      )}
     </>
   );
 }

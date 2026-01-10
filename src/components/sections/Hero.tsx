@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
+import { ButtonLink } from "@/components/ui";
 
 export default function Hero() {
   return (
@@ -54,18 +54,22 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center">
-            <Link
+            <ButtonLink
               href="/how-it-works"
-              className="px-8 py-4 text-base text-center font-semibold text-black bg-white rounded-lg hover:bg-gray-100 transition-all shadow-lg hover:shadow-xl"
+              variant="light"
+              size="xl"
+              className="text-center font-semibold shadow-lg hover:shadow-xl"
             >
               See How It Works
-            </Link>
-            <Link
+            </ButtonLink>
+            <ButtonLink
               href="/waitlist"
-              className="px-8 py-4 text-base text-center font-semibold text-white border-2 border-white rounded-lg hover:bg-white/10 transition-all"
+              variant="outlineLight"
+              size="xl"
+              className="text-center font-semibold border-white"
             >
               Join the Waitlist
-            </Link>
+            </ButtonLink>
           </div>
         </div>
       </div>
