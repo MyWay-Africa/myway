@@ -4,15 +4,7 @@ import { useState } from "react";
 import { Hero, RealitySlider, WhatIsMyWay, HowMyWayWorks, DriverSection, WhyInevitable, CTASection } from "@/components/sections";
 import { Footer } from "@/components/layout";
 import {
-  Button,
-  Input,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  Modal,
-  Badge,
-  Avatar,
+  SlideUp,
 } from "@/components/ui";
 import { useModal } from "@/hooks";
 
@@ -23,28 +15,44 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Hero Section with integrated navbar */}
-      <Hero />
+      <SlideUp>
+        <Hero />
+      </SlideUp>
 
       {/* Reality Slider Section */}
-      <RealitySlider />
+      <SlideUp delay={0.3}>
+        <RealitySlider />
+      </SlideUp>
 
       {/* What is MyWay Section */}
-      <WhatIsMyWay />
+      <SlideUp delay={0.3}>
+        <WhatIsMyWay />
+      </SlideUp>
 
       {/* How MyWay Works Section */}
-      <HowMyWayWorks />
+      <SlideUp delay={0.3}>
+        <HowMyWayWorks />
+      </SlideUp>
 
       {/* Driver Section */}
-      <DriverSection />
+      <SlideUp delay={0.3}>
+        <DriverSection />
+      </SlideUp>
 
       {/* Why MyWay Is Inevitable Section */}
-      <WhyInevitable />
+      <SlideUp delay={0.3}>
+        <WhyInevitable />
+      </SlideUp>
 
       {/* CTA Section */}
-      <CTASection />
+      <SlideUp delay={0.3}>
+        <CTASection />
+      </SlideUp>
 
       {/* Footer */}
-      <Footer />
+      <SlideUp delay={0.3}>
+        <Footer />
+      </SlideUp>
     </div>
   );
 }
