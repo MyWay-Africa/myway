@@ -283,8 +283,8 @@ export default function WaitlistPage() {
                 <div className="relative">
                   <select
                     className={`
-                      w-full px-4 py-2
-                      border rounded-lg bg-white
+                      w-full px-4 py-2 pr-10 appearance-none
+                      border rounded-lg bg-white text-gray-900
                       transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-offset-0
                       ${errors.city
@@ -294,9 +294,11 @@ export default function WaitlistPage() {
                     value={form.city}
                     onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
                   >
-                    <option value="">Select an option</option>
+                    <option value="" className="text-gray-500">
+                      Select an option
+                    </option>
                     {cityOptions.map((c) => (
-                      <option key={c} value={c}>
+                      <option key={c} value={c} className="text-gray-900">
                         {c}
                       </option>
                     ))}
@@ -321,8 +323,8 @@ export default function WaitlistPage() {
                 <div className="relative">
                   <select
                     className={`
-                      w-full px-4 py-2
-                      border rounded-lg bg-white
+                      w-full px-4 py-2 pr-10 appearance-none
+                      border rounded-lg bg-white text-gray-900
                       transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-offset-0
                       ${errors.interest
@@ -332,9 +334,11 @@ export default function WaitlistPage() {
                     value={form.interest}
                     onChange={(e) => setForm((p) => ({ ...p, interest: e.target.value }))}
                   >
-                    <option value="">Select an option</option>
+                    <option value="" className="text-gray-500">
+                      Select an option
+                    </option>
                     {interestOptions.map((c) => (
-                      <option key={c} value={c}>
+                      <option key={c} value={c} className="text-gray-900">
                         {c}
                       </option>
                     ))}
