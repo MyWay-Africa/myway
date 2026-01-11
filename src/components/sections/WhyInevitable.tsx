@@ -58,7 +58,7 @@ export default function WhyInevitable() {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-3 lg:px-4">
         {/* Header */}
         <div className="mb-12">
           {/* Badge */}

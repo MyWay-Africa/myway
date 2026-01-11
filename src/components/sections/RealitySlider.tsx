@@ -134,7 +134,7 @@ export default function RealitySlider() {
 
   return (
     <section className="py-16 md:py-24 bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-3 lg:px-4">
         {/* Section Header */}
         <div className="mb-12">
           {/* Badge */}
@@ -233,11 +233,10 @@ export default function RealitySlider() {
             <button
               onClick={prevSlide}
               disabled={isFirstSlide}
-              className={`w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center transition-colors ${
-                isFirstSlide
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center transition-colors ${isFirstSlide
+                ? "opacity-40 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
               aria-label="Previous slide"
             >
               <svg
@@ -257,11 +256,10 @@ export default function RealitySlider() {
             <button
               onClick={nextSlide}
               disabled={isLastSlide}
-              className={`w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center transition-colors ${
-                isLastSlide
-                  ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
+              className={`w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center transition-colors ${isLastSlide
+                ? "opacity-40 cursor-not-allowed"
+                : "hover:bg-gray-100"
+                }`}
               aria-label="Next slide"
             >
               <svg

@@ -22,7 +22,7 @@ export default function Hero() {
       <Navbar variant="transparent" />
 
       {/* Hero Content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
+      <div className="relative z-10 flex-1 flex items-center justify-center px-3 lg:px-4">
         <div className="text-left sm:text-center max-w-4xl mx-auto">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-8">

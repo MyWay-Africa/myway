@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/ui";
+import { Button, ButtonLink } from "@/components/ui";
 
 export default function CTASection() {
   return (
@@ -37,7 +37,7 @@ export default function CTASection() {
         </svg>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+      <div className="max-w-6xl mx-auto px-3 lg:px-4 text-center relative z-10">
         {/* Badge */}
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full border border-gray-200 mb-8">
           <svg
@@ -76,9 +76,9 @@ export default function CTASection() {
           <Button variant="dark" size="lg" className="min-w-[200px] font-semibold">
             Join the Waitlist
           </Button>
-          <Button variant="outlineDark" size="lg" className="min-w-[200px] font-semibold">
+          <ButtonLink href="/partner" variant="outlineDark" size="lg" className="min-w-[200px] font-semibold">
             I&apos;d like to partner / Invest
-          </Button>
+          </ButtonLink>
         </div>
 
         {/* Tagline */}

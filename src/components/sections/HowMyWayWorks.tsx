@@ -41,7 +41,7 @@ export default function HowMyWayWorks() {
       <div className="absolute left-0 top-1/4 w-1 h-32 bg-gradient-to-b from-cyan-400 to-transparent" />
       <div className="absolute right-0 top-1/3 w-1 h-32 bg-gradient-to-b from-amber-400 to-transparent" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-3 lg:px-4">
         {/* Header */}
         <div className="text-center mb-16">
           {/* Badge */}

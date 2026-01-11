@@ -45,7 +45,7 @@ export default function Footer() {
       {/* Blue accent line at the top */}
       <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400" />
 
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-16">
+      <div className="max-w-[1440px] mx-auto px-3 lg:px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Section */}
           <div className="lg:col-span-3">

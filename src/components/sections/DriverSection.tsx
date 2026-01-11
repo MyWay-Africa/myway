@@ -19,11 +19,10 @@ const features = [
   },
   {
     title: "Higher Guaranteed Earnings",
-
   },
   {
     title: "Shared rides = consistent trips = better economics.",
-  }
+  },
 ];
 
 export default function DriverSection() {
@@ -53,7 +52,7 @@ export default function DriverSection() {
         </svg>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1440px] mx-auto px-3 lg:px-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           {/* Left side - Content */}
           <div className="order-2 lg:order-1">
@@ -117,9 +116,7 @@ export default function DriverSection() {
                       {/* <h4 className="text-white font-semibold">
                         {feature.title}
                       </h4> */}
-                      <p className="text-gray-300 text-sm">
-                        {feature.title}
-                      </p>
+                      <p className="text-gray-300 text-sm">{feature.title}</p>
                     </div>
                   </div>
                 ))}
