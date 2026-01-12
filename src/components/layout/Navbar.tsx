@@ -512,7 +512,7 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
                 </div>
 
                 {/* Submenu Items */}
-                <div className="flex-1 px-5">
+                <div className="px-5 pb-4">
                   {currentSection.items.map((item, index) => (
                     <div
                       key={index}
@@ -540,7 +540,7 @@ export default function Navbar({ variant = "transparent" }: NavbarProps) {
                 </div>
 
                 {/* CTA Button */}
-                <div className="p-5 mt-auto">
+                <div className="px-5 pb-8">
                   <Link
                     href={currentSection.ctaHref}
                     onClick={handleClose}
