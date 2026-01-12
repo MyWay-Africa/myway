@@ -30,6 +30,21 @@ const footerSections: FooterSection[] = [
     ],
   },
   {
+    title: "Businesses",
+    links: [
+      {
+        href: "/airport-partners",
+        label: "Airport & Institutional Partners",
+        badge: "Coming Soon",
+      },
+      {
+        href: "/partnerships-enterprises",
+        label: "Partnerships & Enterprises",
+        badge: "Coming Soon",
+      },
+    ],
+  },
+  {
     title: "Legal / Trust",
     links: [
       { href: "/terms", label: "Terms of Service" },
@@ -42,9 +57,6 @@ const footerSections: FooterSection[] = [
 export default function Footer() {
   return (
     <footer className="bg-black text-white">
-      {/* Blue accent line at the top */}
-      <div className="h-1 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-400" />
-
       <div className="max-w-[1440px] mx-auto px-3 lg:px-4 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8">
           {/* Brand Section */}
@@ -78,7 +90,13 @@ export default function Footer() {
                     >
                       {link.label}
                       {link.badge && (
-                        <span className="px-2 py-0.5 text-xs font-medium bg-transparent border border-blue-400 text-blue-400 rounded-full">
+                        <span
+                          className="px-2 py-0.5 text-xs font-medium rounded-full"
+                          style={{
+                            backgroundColor: "#E6F7FD",
+                            color: "#005E7F",
+                          }}
+                        >
                           {link.badge}
                         </span>
                       )}

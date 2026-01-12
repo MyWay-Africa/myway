@@ -138,9 +138,13 @@ export default function RealitySlider() {
         {/* Section Header */}
         <div className="mb-12">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 rounded-full mb-6">
+          <div 
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+            style={{ backgroundColor: '#E6F7FD' }}
+          >
             <svg
-              className="w-4 h-4 text-blue-600"
+              className="w-4 h-4"
+              style={{ color: '#005E7F' }}
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -152,7 +156,7 @@ export default function RealitySlider() {
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               />
             </svg>
-            <span className="text-blue-600 text-sm font-medium">
+            <span className="text-sm font-medium" style={{ color: '#005E7F' }}>
               The Reality Travelers Face
             </span>
           </div>

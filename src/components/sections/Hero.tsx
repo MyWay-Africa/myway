@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Navbar from "@/components/layout/Navbar";
-import { ButtonLink } from "@/components/ui";
+import { Button, ButtonLink } from "@/components/ui";
 
 export default function Hero() {
   return (
@@ -54,14 +54,17 @@ export default function Hero() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 justify-center">
-            <ButtonLink
-              href="/how-it-works"
+            <Button
               variant="light"
               size="xl"
               className="text-center font-semibold shadow-lg hover:shadow-xl"
+              onClick={() => {
+                const el = document.getElementById("how-myway-works");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}
             >
               See How It Works
-            </ButtonLink>
+            </Button>
             <ButtonLink
               href="/waitlist"
               variant="outlineLight"

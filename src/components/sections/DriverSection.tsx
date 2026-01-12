@@ -57,9 +57,13 @@ export default function DriverSection() {
           {/* Left side - Content */}
           <div className="order-2 lg:order-1">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-6">
+            <div 
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
+              style={{ backgroundColor: '#E6F7FD' }}
+            >
               <svg
-                className="w-4 h-4 text-white"
+                className="w-4 h-4"
+                style={{ color: '#005E7F' }}
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -71,7 +75,7 @@ export default function DriverSection() {
                   d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
                 />
               </svg>
-              <span className="text-white text-sm font-medium">
+              <span className="text-sm font-medium" style={{ color: '#005E7F' }}>
                 MyWay Driver
               </span>
             </div>
