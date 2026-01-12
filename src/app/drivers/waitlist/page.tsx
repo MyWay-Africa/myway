@@ -425,12 +425,17 @@ export default function DriverWaitlistPage() {
                       type="button"
                       variant="outlineDark"
                       size="xl"
-                      className="w-full rounded-xl"
+                      className="w-full rounded-xl order-2 sm:order-1"
                       onClick={handleBack}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" variant="dark" size="xl" className="w-full rounded-xl">
+                    <Button
+                      type="submit"
+                      variant="dark"
+                      size="xl"
+                      className="w-full rounded-xl order-1 sm:order-2"
+                    >
                       Continue
                     </Button>
                   </div>
@@ -578,12 +583,17 @@ export default function DriverWaitlistPage() {
                       type="button"
                       variant="outlineDark"
                       size="xl"
-                      className="w-full rounded-xl"
+                      className="w-full rounded-xl order-2 sm:order-1"
                       onClick={handleBack}
                     >
                       Back
                     </Button>
-                    <Button type="submit" variant="dark" size="xl" className="w-full rounded-xl">
+                    <Button
+                      type="submit"
+                      variant="dark"
+                      size="xl"
+                      className="w-full rounded-xl order-1 sm:order-2"
+                    >
                       Continue
                     </Button>
                   </div>
@@ -683,7 +693,7 @@ export default function DriverWaitlistPage() {
                       type="button"
                       variant="outlineDark"
                       size="xl"
-                      className="w-full rounded-xl"
+                      className="w-full rounded-xl order-2 sm:order-1"
                       onClick={handleBack}
                     >
                       Back
@@ -692,7 +702,7 @@ export default function DriverWaitlistPage() {
                       type="submit"
                       variant="dark"
                       size="xl"
-                      className="w-full rounded-xl"
+                      className="w-full rounded-xl order-1 sm:order-2"
                       isLoading={joinDriverWaitlistMutation.isPending}
                       disabled={joinDriverWaitlistMutation.isPending}
                     >

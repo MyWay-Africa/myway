@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 interface FooterLink {
   href: string;
@@ -16,29 +19,29 @@ const footerSections: FooterSection[] = [
   {
     title: "Platform",
     links: [
-      { href: "/how-myway-works", label: "How MyWay Works" },
-      { href: "/for-travelers", label: "For Travelers" },
-      { href: "/safety-trust", label: "Safety & Trust", badge: "Coming Soon" },
+      { href: "/#how-myway-works", label: "How MyWay Works" },
+      { href: "/waitlist", label: "For Travelers" },
+      { href: "/waitlist", label: "Safety & Trust", badge: "Coming Soon" },
     ],
   },
   {
     title: "Company",
     links: [
-      { href: "/about", label: "About" },
-      { href: "/partnerships", label: "Partnerships / Investors" },
-      { href: "/contact", label: "Contact" },
+      { href: "/", label: "About" },
+      { href: "/partner", label: "Partnerships / Investors" },
+      { href: "/partner", label: "Contact" },
     ],
   },
   {
     title: "Businesses",
     links: [
       {
-        href: "/airport-partners",
+        href: "/partner",
         label: "Airport & Institutional Partners",
         badge: "Coming Soon",
       },
       {
-        href: "/partnerships-enterprises",
+        href: "/partner",
         label: "Partnerships & Enterprises",
         badge: "Coming Soon",
       },
@@ -55,6 +58,8 @@ const footerSections: FooterSection[] = [
 ];
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <footer className="bg-black text-white">
       <div className="max-w-[1440px] mx-auto px-3 lg:px-4 py-16">
@@ -83,9 +88,17 @@ export default function Footer() {
               </h3>
               <ul className="space-y-3">
                 {section.links.map((link) => (
-                  <li key={link.href}>
+                  <li key={`${link.href}-${link.label}`}>
                     <Link
                       href={link.href}
+                      onClick={(e) => {
+                        if (link.href !== "/#how-myway-works") return;
+                        if (pathname !== "/") return;
+
+                        e.preventDefault();
+                        const el = document.getElementById("how-myway-works");
+                        el?.scrollIntoView({ behavior: "smooth" });
+                      }}
                       className="text-gray-400 hover:text-white text-sm transition-colors duration-200 inline-flex items-center gap-2"
                     >
                       {link.label}
