@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Button } from "@/components/ui";
+import { ButtonLink } from "@/components/ui";
 
 // Features data
 const features = [
@@ -128,9 +128,9 @@ export default function DriverSection() {
             </div>
 
             {/* CTA Button */}
-            <Button variant="light" size="lg" className="font-semibold">
+            <ButtonLink href="/drivers/waitlist" variant="light" size="lg" className="font-semibold">
               Join Driver Waitlist
-            </Button>
+            </ButtonLink>
           </div>
 
           {/* Right side - Image */}
