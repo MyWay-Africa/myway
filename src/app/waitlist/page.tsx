@@ -6,16 +6,7 @@ import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import { api } from "@/services/api";
-
-type WaitlistPayload = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  city: string;
-  interest: string;
-};
+import { waitlistApi, type WaitlistPayload } from "@/hooks/useWaitlist";
 
 type FieldErrors = Partial<Record<keyof WaitlistPayload, string>>;
 
@@ -54,9 +45,7 @@ export default function WaitlistPage() {
   );
 
   const joinWaitlistMutation = useMutation({
-    mutationFn: async (payload: WaitlistPayload) => {
-      return api.post<unknown>("/waitlist", payload);
-    },
+    mutationFn: waitlistApi.joinWaitlist,
     onSuccess: () => {
       setIsSubmitted(true);
     },

@@ -6,20 +6,7 @@ import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import { api } from "@/services/api";
-
-type DriverWaitlistPayload = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone?: string;
-  city: string;
-  yearsExperience: string;
-  hasCar: string;
-  carType: string;
-  availableFullTime: string;
-  startTimeline: string;
-};
+import { waitlistApi, type DriverWaitlistPayload } from "@/hooks/useWaitlist";
 
 type FieldErrors = Partial<Record<keyof DriverWaitlistPayload, string>>;
 
@@ -74,9 +61,7 @@ export default function DriverWaitlistPage() {
   );
 
   const joinDriverWaitlistMutation = useMutation({
-    mutationFn: async (payload: DriverWaitlistPayload) => {
-      return api.post<unknown>("/drivers/waitlist", payload);
-    },
+    mutationFn: waitlistApi.joinDriverWaitlist,
     onSuccess: () => {
       setIsSubmitted(true);
     },
@@ -156,7 +141,7 @@ export default function DriverWaitlistPage() {
       city: form.city,
       yearsExperience: form.yearsExperience,
       hasCar: form.hasCar,
-      carType: form.carType,
+      carType: form.hasCar === "Yes" ? form.carType : undefined,
       availableFullTime: form.availableFullTime,
       startTimeline: form.startTimeline,
     });
