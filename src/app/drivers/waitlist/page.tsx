@@ -2,13 +2,41 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import { waitlistApi, type DriverWaitlistPayload } from "@/hooks/useWaitlist";
+import {
+  waitlistApi,
+  useWaitlistYearsOfExperience,
+  useWaitlistCarTypes,
+  useWaitlistNoticePeriods,
+  useWaitlistAvailabilities,
+  yearsOfExperienceDisplayLabels,
+  carTypeDisplayLabels,
+  noticePeriodDisplayLabels,
+  availabilityDisplayLabels,
+  type DriverWaitlistPayload,
+  type YearsOfExperienceOption,
+  type CarTypeOption,
+  type NoticePeriodOption,
+  type AvailabilityOption,
+} from "@/hooks/useWaitlist";
 
-type FieldErrors = Partial<Record<keyof DriverWaitlistPayload, string>>;
+type FormState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  yearsOfExperience: string;
+  carOwner: string;
+  carType: string;
+  noticePeriod: string;
+  availability: string;
+};
+
+type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -20,45 +48,33 @@ const steps = [
   { number: 3, label: "Driver Readiness" },
 ];
 
+const cityOptions = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Calabar", "Other"];
+
 export default function DriverWaitlistPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
 
-  const [form, setForm] = useState<DriverWaitlistPayload>({
+  const [form, setForm] = useState<FormState>({
     firstName: "",
     lastName: "",
     email: "",
     phone: "",
     city: "",
-    yearsExperience: "",
-    hasCar: "",
+    yearsOfExperience: "",
+    carOwner: "",
     carType: "",
-    availableFullTime: "",
-    startTimeline: "",
+    noticePeriod: "",
+    availability: "",
   });
 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const cityOptions = useMemo(
-    () => ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Other"],
-    []
-  );
-
-  const yearsOptions = useMemo(
-    () => ["Less than 1 year", "1-2 years", "3-5 years", "5-10 years", "10+ years"],
-    []
-  );
-
-  const carTypeOptions = useMemo(
-    () => ["Sedan", "SUV", "Minivan", "Other"],
-    []
-  );
-
-  const startTimelineOptions = useMemo(
-    () => ["Immediately", "Within 1 month", "Within 3 months", "Not sure yet"],
-    []
-  );
+  // Fetch options from API
+  const { data: yearsOptions, isLoading: isLoadingYears } = useWaitlistYearsOfExperience();
+  const { data: carTypeOptions, isLoading: isLoadingCarTypes } = useWaitlistCarTypes();
+  const { data: noticePeriodOptions, isLoading: isLoadingNoticePeriods } = useWaitlistNoticePeriods();
+  const { data: availabilityOptions, isLoading: isLoadingAvailabilities } = useWaitlistAvailabilities();
 
   const joinDriverWaitlistMutation = useMutation({
     mutationFn: waitlistApi.joinDriverWaitlist,
@@ -85,9 +101,9 @@ export default function DriverWaitlistPage() {
   const validateStep2 = (): FieldErrors => {
     const nextErrors: FieldErrors = {};
 
-    if (!form.yearsExperience) nextErrors.yearsExperience = "Please select an option";
-    if (!form.hasCar) nextErrors.hasCar = "Please select an option";
-    if (form.hasCar === "Yes" && !form.carType) nextErrors.carType = "Please select an option";
+    if (!form.yearsOfExperience) nextErrors.yearsOfExperience = "Please select an option";
+    if (!form.carOwner) nextErrors.carOwner = "Please select an option";
+    if (form.carOwner === "Yes" && !form.carType) nextErrors.carType = "Please select an option";
 
     return nextErrors;
   };
@@ -95,8 +111,8 @@ export default function DriverWaitlistPage() {
   const validateStep3 = (): FieldErrors => {
     const nextErrors: FieldErrors = {};
 
-    if (!form.availableFullTime) nextErrors.availableFullTime = "Please select an option";
-    if (!form.startTimeline) nextErrors.startTimeline = "Please select an option";
+    if (!form.availability) nextErrors.availability = "Please select an option";
+    if (!form.noticePeriod) nextErrors.noticePeriod = "Please select an option";
 
     return nextErrors;
   };
@@ -133,18 +149,19 @@ export default function DriverWaitlistPage() {
 
     if (Object.keys(nextErrors).length > 0) return;
 
-    joinDriverWaitlistMutation.mutate({
+    const payload: DriverWaitlistPayload = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim(),
-      phone: form.phone?.trim() || undefined,
       city: form.city,
-      yearsExperience: form.yearsExperience,
-      hasCar: form.hasCar,
-      carType: form.hasCar === "Yes" ? form.carType : undefined,
-      availableFullTime: form.availableFullTime,
-      startTimeline: form.startTimeline,
-    });
+      yearsOfExperience: form.yearsOfExperience,
+      carOwner: form.carOwner === "Yes",
+      carType: form.carOwner === "Yes" ? form.carType : undefined,
+      noticePeriod: form.noticePeriod,
+      availability: form.availability,
+    };
+
+    joinDriverWaitlistMutation.mutate(payload);
   };
 
   if (isSubmitted) {
@@ -286,26 +303,23 @@ export default function DriverWaitlistPage() {
                 <div key={step.number} className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
-                        currentStep >= step.number
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.number
                           ? "bg-gray-900 text-white"
                           : "bg-gray-200 text-gray-500"
-                      }`}
+                        }`}
                     >
                       {step.number}
                     </div>
                     <span
-                      className={`text-sm font-medium ${
-                        currentStep >= step.number ? "text-gray-900" : "text-gray-400"
-                      }`}
+                      className={`text-sm font-medium ${currentStep >= step.number ? "text-gray-900" : "text-gray-400"
+                        }`}
                     >
                       {step.label}
                     </span>
                   </div>
                   <div
-                    className={`h-1 rounded-full ${index < steps.length - 1 ? "mr-2" : ""} ${
-                      currentStep >= step.number ? "bg-gray-900" : "bg-gray-200"
-                    }`}
+                    className={`h-1 rounded-full ${index < steps.length - 1 ? "mr-2" : ""} ${currentStep >= step.number ? "bg-gray-900" : "bg-gray-200"
+                      }`}
                   />
                 </div>
               ))}
@@ -369,10 +383,9 @@ export default function DriverWaitlistPage() {
                           border rounded-lg bg-white text-gray-900
                           transition-all duration-200
                           focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${
-                            errors.city
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ${errors.city
+                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                           }
                         `}
                         value={form.city}
@@ -462,21 +475,21 @@ export default function DriverWaitlistPage() {
                           border rounded-lg bg-white text-gray-900
                           transition-all duration-200
                           focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${
-                            errors.yearsExperience
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ${errors.yearsOfExperience
+                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                           }
                         `}
-                        value={form.yearsExperience}
-                        onChange={(e) => setForm((p) => ({ ...p, yearsExperience: e.target.value }))}
+                        value={form.yearsOfExperience}
+                        onChange={(e) => setForm((p) => ({ ...p, yearsOfExperience: e.target.value }))}
+                        disabled={isLoadingYears}
                       >
                         <option value="" className="text-gray-500">
-                          Select an option
+                          {isLoadingYears ? "Loading..." : "Select an option"}
                         </option>
-                        {yearsOptions.map((y) => (
-                          <option key={y} value={y} className="text-gray-900">
-                            {y}
+                        {yearsOptions?.map((option) => (
+                          <option key={option} value={option} className="text-gray-900">
+                            {yearsOfExperienceDisplayLabels[option as YearsOfExperienceOption] || option}
                           </option>
                         ))}
                       </select>
@@ -490,34 +503,34 @@ export default function DriverWaitlistPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
-                    {errors.yearsExperience && (
-                      <p className="mt-1 text-sm text-red-500">{errors.yearsExperience}</p>
+                    {errors.yearsOfExperience && (
+                      <p className="mt-1 text-sm text-red-500">{errors.yearsOfExperience}</p>
                     )}
                   </div>
 
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Do you currently have a car?
+                      Do you currently own a car?
                     </label>
                     <div className="flex flex-wrap gap-4">
-                      {["Yes", "No, I plan to get one", "Not sure yet"].map((option) => (
+                      {["Yes", "No"].map((option) => (
                         <label key={option} className="flex items-center gap-2 cursor-pointer">
                           <input
                             type="radio"
-                            name="hasCar"
+                            name="carOwner"
                             value={option}
-                            checked={form.hasCar === option}
-                            onChange={(e) => setForm((p) => ({ ...p, hasCar: e.target.value }))}
+                            checked={form.carOwner === option}
+                            onChange={(e) => setForm((p) => ({ ...p, carOwner: e.target.value }))}
                             className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900"
                           />
                           <span className="text-sm text-gray-700">{option}</span>
                         </label>
                       ))}
                     </div>
-                    {errors.hasCar && <p className="mt-1 text-sm text-red-500">{errors.hasCar}</p>}
+                    {errors.carOwner && <p className="mt-1 text-sm text-red-500">{errors.carOwner}</p>}
                   </div>
 
-                  {form.hasCar === "Yes" && (
+                  {form.carOwner === "Yes" && (
                     <div className="w-full">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Type of car
@@ -529,21 +542,21 @@ export default function DriverWaitlistPage() {
                             border rounded-lg bg-white text-gray-900
                             transition-all duration-200
                             focus:outline-none focus:ring-2 focus:ring-offset-0
-                            ${
-                              errors.carType
-                                ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                                : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                            ${errors.carType
+                              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                             }
                           `}
                           value={form.carType}
                           onChange={(e) => setForm((p) => ({ ...p, carType: e.target.value }))}
+                          disabled={isLoadingCarTypes}
                         >
                           <option value="" className="text-gray-500">
-                            Select an option
+                            {isLoadingCarTypes ? "Loading..." : "Select an option"}
                           </option>
-                          {carTypeOptions.map((c) => (
-                            <option key={c} value={c} className="text-gray-900">
-                              {c}
+                          {carTypeOptions?.map((option) => (
+                            <option key={option} value={option} className="text-gray-900">
+                              {carTypeDisplayLabels[option as CarTypeOption] || option}
                             </option>
                           ))}
                         </select>
@@ -598,28 +611,46 @@ export default function DriverWaitlistPage() {
 
                 <form onSubmit={onSubmit} className="space-y-5">
                   <div className="w-full">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Are you available to drive full-time?
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      What is your availability?
                     </label>
-                    <div className="flex flex-wrap gap-4">
-                      {["Yes, full-time", "Part-time only", "Flexible"].map((option) => (
-                        <label key={option} className="flex items-center gap-2 cursor-pointer">
-                          <input
-                            type="radio"
-                            name="availableFullTime"
-                            value={option}
-                            checked={form.availableFullTime === option}
-                            onChange={(e) =>
-                              setForm((p) => ({ ...p, availableFullTime: e.target.value }))
-                            }
-                            className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900"
-                          />
-                          <span className="text-sm text-gray-700">{option}</span>
-                        </label>
-                      ))}
+                    <div className="relative">
+                      <select
+                        className={`
+                          w-full px-4 py-2 pr-10 appearance-none
+                          border rounded-lg bg-white text-gray-900
+                          transition-all duration-200
+                          focus:outline-none focus:ring-2 focus:ring-offset-0
+                          ${errors.availability
+                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          }
+                        `}
+                        value={form.availability}
+                        onChange={(e) => setForm((p) => ({ ...p, availability: e.target.value }))}
+                        disabled={isLoadingAvailabilities}
+                      >
+                        <option value="" className="text-gray-500">
+                          {isLoadingAvailabilities ? "Loading..." : "Select an option"}
+                        </option>
+                        {availabilityOptions?.map((option) => (
+                          <option key={option} value={option} className="text-gray-900">
+                            {availabilityDisplayLabels[option as AvailabilityOption] || option}
+                          </option>
+                        ))}
+                      </select>
+                      <svg
+                        className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2}
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                      </svg>
                     </div>
-                    {errors.availableFullTime && (
-                      <p className="mt-1 text-sm text-red-500">{errors.availableFullTime}</p>
+                    {errors.availability && (
+                      <p className="mt-1 text-sm text-red-500">{errors.availability}</p>
                     )}
                   </div>
 
@@ -634,21 +665,21 @@ export default function DriverWaitlistPage() {
                           border rounded-lg bg-white text-gray-900
                           transition-all duration-200
                           focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${
-                            errors.startTimeline
-                              ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                              : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                          ${errors.noticePeriod
+                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                           }
                         `}
-                        value={form.startTimeline}
-                        onChange={(e) => setForm((p) => ({ ...p, startTimeline: e.target.value }))}
+                        value={form.noticePeriod}
+                        onChange={(e) => setForm((p) => ({ ...p, noticePeriod: e.target.value }))}
+                        disabled={isLoadingNoticePeriods}
                       >
                         <option value="" className="text-gray-500">
-                          Select an option
+                          {isLoadingNoticePeriods ? "Loading..." : "Select an option"}
                         </option>
-                        {startTimelineOptions.map((t) => (
-                          <option key={t} value={t} className="text-gray-900">
-                            {t}
+                        {noticePeriodOptions?.map((option) => (
+                          <option key={option} value={option} className="text-gray-900">
+                            {noticePeriodDisplayLabels[option as NoticePeriodOption] || option}
                           </option>
                         ))}
                       </select>
@@ -662,8 +693,8 @@ export default function DriverWaitlistPage() {
                         <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
                       </svg>
                     </div>
-                    {errors.startTimeline && (
-                      <p className="mt-1 text-sm text-red-500">{errors.startTimeline}</p>
+                    {errors.noticePeriod && (
+                      <p className="mt-1 text-sm text-red-500">{errors.noticePeriod}</p>
                     )}
                   </div>
 

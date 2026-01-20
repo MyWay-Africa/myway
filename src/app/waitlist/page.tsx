@@ -2,22 +2,39 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import { waitlistApi, type WaitlistPayload } from "@/hooks/useWaitlist";
+import {
+  waitlistApi,
+  useWaitlistInterests,
+  interestDisplayLabels,
+  type WaitlistPayload,
+  type InterestOption,
+} from "@/hooks/useWaitlist";
 
-type FieldErrors = Partial<Record<keyof WaitlistPayload, string>>;
+type FormState = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  interest: string;
+};
+
+type FieldErrors = Partial<Record<keyof FormState, string>>;
 
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+const cityOptions = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Calabar", "Other"];
+
 export default function WaitlistPage() {
   const router = useRouter();
 
-  const [form, setForm] = useState<WaitlistPayload>({
+  const [form, setForm] = useState<FormState>({
     firstName: "",
     lastName: "",
     email: "",
@@ -29,20 +46,8 @@ export default function WaitlistPage() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const cityOptions = useMemo(
-    () => ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Other"],
-    []
-  );
-
-  const interestOptions = useMemo(
-    () => [
-      "Premium shared airport rides",
-      "Driver waitlist",
-      "Partnership / Investment",
-      "Other",
-    ],
-    []
-  );
+  // Fetch interest options from API
+  const { data: interestOptions, isLoading: isLoadingInterests } = useWaitlistInterests();
 
   const joinWaitlistMutation = useMutation({
     mutationFn: waitlistApi.joinWaitlist,
@@ -74,14 +79,15 @@ export default function WaitlistPage() {
 
     if (Object.keys(nextErrors).length > 0) return;
 
-    joinWaitlistMutation.mutate({
+    const payload: WaitlistPayload = {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim(),
-      phone: form.phone?.trim() || undefined,
       city: form.city,
       interest: form.interest,
-    });
+    };
+
+    joinWaitlistMutation.mutate(payload);
   };
 
   if (isSubmitted) {
@@ -136,9 +142,9 @@ export default function WaitlistPage() {
 
               <div className="border border-gray-200 rounded-xl p-5 space-y-4 mb-10">
                 {[
-                  "You’ll receive early access before public launch",
-                  "We’ll keep you updated on important milestones",
-                  "You’ll get launch perks and early user benefits",
+                  "You'll receive early access before public launch",
+                  "We'll keep you updated on important milestones",
+                  "You'll get launch perks and early user benefits",
                 ].map((text) => (
                   <div key={text} className="flex items-start gap-3">
                     <div className="mt-0.5 w-5 h-5 rounded-full bg-gray-100 border border-gray-200 flex items-center justify-center">
@@ -322,13 +328,14 @@ export default function WaitlistPage() {
                     `}
                     value={form.interest}
                     onChange={(e) => setForm((p) => ({ ...p, interest: e.target.value }))}
+                    disabled={isLoadingInterests}
                   >
                     <option value="" className="text-gray-500">
-                      Select an option
+                      {isLoadingInterests ? "Loading..." : "Select an option"}
                     </option>
-                    {interestOptions.map((c) => (
-                      <option key={c} value={c} className="text-gray-900">
-                        {c}
+                    {interestOptions?.map((option) => (
+                      <option key={option} value={option} className="text-gray-900">
+                        {interestDisplayLabels[option as InterestOption] || option}
                       </option>
                     ))}
                   </select>
