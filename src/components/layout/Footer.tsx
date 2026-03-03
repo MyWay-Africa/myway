@@ -78,6 +78,11 @@ export default function Footer() {
             <p className="mt-4 text-gray-400 text-sm">
               Airport rides, finally done right.
             </p>
+            <address className="mt-4 text-gray-400 text-sm not-italic">
+              House 5 Gooseberry, Cooperative Villas,
+              <br />
+              Badore, Ajah, Lekki, Lagos
+            </address>
           </div>
 
           {/* Links Sections */}

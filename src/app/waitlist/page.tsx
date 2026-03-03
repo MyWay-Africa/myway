@@ -29,7 +29,15 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-const cityOptions = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Calabar", "Other"];
+const cityOptions = [
+  "Lagos",
+  "Abuja",
+  "Port Harcourt",
+  "Ibadan",
+  "Kano",
+  "Calabar",
+  "Other",
+];
 
 export default function WaitlistPage() {
   const router = useRouter();
@@ -47,7 +55,8 @@ export default function WaitlistPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Fetch interest options from API
-  const { data: interestOptions, isLoading: isLoadingInterests } = useWaitlistInterests();
+  const { data: interestOptions, isLoading: isLoadingInterests } =
+    useWaitlistInterests();
 
   const joinWaitlistMutation = useMutation({
     mutationFn: waitlistApi.joinWaitlist,
@@ -59,8 +68,10 @@ export default function WaitlistPage() {
   const validate = (): FieldErrors => {
     const nextErrors: FieldErrors = {};
 
-    if (!form.firstName.trim()) nextErrors.firstName = "Please enter a valid name";
-    if (!form.lastName.trim()) nextErrors.lastName = "Please enter a valid name";
+    if (!form.firstName.trim())
+      nextErrors.firstName = "Please enter a valid name";
+    if (!form.lastName.trim())
+      nextErrors.lastName = "Please enter a valid name";
 
     if (!form.email.trim() || !isValidEmail(form.email)) {
       nextErrors.email = "Please enter a valid email";
@@ -108,8 +119,9 @@ export default function WaitlistPage() {
                 Airport rides, finally done right.
               </h2>
               <p className="text-white/70 max-w-xl">
-                Premium shared rides built for airport travel — not random city trips.
-                Verified co-passengers. Predictable pricing. Professional drivers.
+                Premium shared rides built for airport travel — not random city
+                trips. Verified co-passengers. Predictable pricing. Professional
+                drivers.
               </p>
             </div>
           </div>
@@ -125,7 +137,11 @@ export default function WaitlistPage() {
                     stroke="currentColor"
                     strokeWidth={2}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5 13l4 4L19 7"
+                    />
                   </svg>
                 </div>
               </div>
@@ -134,11 +150,13 @@ export default function WaitlistPage() {
                 You&apos;re on the Waitlist
               </h1>
               <p className="text-gray-500 text-center mb-10">
-                Thanks for joining MyWay. You&apos;ll be among the first travelers invited
-                when we launch in Lagos.
+                Thanks for joining MyWay. You&apos;ll be among the first
+                travelers invited when we launch in Lagos.
               </p>
 
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">What Happens Next</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                What Happens Next
+              </h2>
 
               <div className="border border-gray-200 rounded-xl p-5 space-y-4 mb-10">
                 {[
@@ -155,7 +173,11 @@ export default function WaitlistPage() {
                         stroke="currentColor"
                         strokeWidth={3}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                     </div>
                     <p className="text-gray-700">{text}</p>
@@ -209,8 +231,9 @@ export default function WaitlistPage() {
               Airport rides, finally done right.
             </h2>
             <p className="text-white/70 max-w-xl">
-              Premium shared rides built for airport travel — not random city trips.
-              Verified co-passengers. Predictable pricing. Professional drivers.
+              Premium shared rides built for airport travel — not random city
+              trips. Verified co-passengers. Predictable pricing. Professional
+              drivers.
             </p>
           </div>
         </div>
@@ -231,7 +254,8 @@ export default function WaitlistPage() {
               Join the MyWay Waitlist
             </h1>
             <p className="text-gray-500 mb-2">
-              Get early access to premium shared airport rides when we launch in Lagos.
+              Get early access to premium shared airport rides when we launch in
+              Lagos.
             </p>
             <p className="text-gray-400 text-sm mb-8">
               Early access. Launch updates. No clutter.
@@ -244,14 +268,18 @@ export default function WaitlistPage() {
                   placeholder="Enter your first name"
                   value={form.firstName}
                   error={errors.firstName}
-                  onChange={(e) => setForm((p) => ({ ...p, firstName: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, firstName: e.target.value }))
+                  }
                 />
                 <Input
                   label="Last Name"
                   placeholder="Enter your last name"
                   value={form.lastName}
                   error={errors.lastName}
-                  onChange={(e) => setForm((p) => ({ ...p, lastName: e.target.value }))}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, lastName: e.target.value }))
+                  }
                 />
               </div>
 
@@ -260,7 +288,9 @@ export default function WaitlistPage() {
                 placeholder="Enter your Email address"
                 value={form.email}
                 error={errors.email}
-                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, email: e.target.value }))
+                }
               />
 
               <Input
@@ -268,7 +298,9 @@ export default function WaitlistPage() {
                 placeholder="0000 000 000"
                 value={form.phone}
                 helperText="Optional. Only used to notify you at launch."
-                onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, phone: e.target.value }))
+                }
               />
 
               <div className="w-full">
@@ -282,12 +314,16 @@ export default function WaitlistPage() {
                       border rounded-lg bg-white text-gray-900
                       transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-offset-0
-                      ${errors.city
-                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}
+                      ${
+                        errors.city
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }
                     `}
                     value={form.city}
-                    onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, city: e.target.value }))
+                    }
                   >
                     <option value="" className="text-gray-500">
                       Select an option
@@ -305,10 +341,16 @@ export default function WaitlistPage() {
                     stroke="currentColor"
                     strokeWidth={2}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
-                {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
+                {errors.city && (
+                  <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+                )}
               </div>
 
               <div className="w-full">
@@ -322,20 +364,29 @@ export default function WaitlistPage() {
                       border rounded-lg bg-white text-gray-900
                       transition-all duration-200
                       focus:outline-none focus:ring-2 focus:ring-offset-0
-                      ${errors.interest
-                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"}
+                      ${
+                        errors.interest
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }
                     `}
                     value={form.interest}
-                    onChange={(e) => setForm((p) => ({ ...p, interest: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, interest: e.target.value }))
+                    }
                     disabled={isLoadingInterests}
                   >
                     <option value="" className="text-gray-500">
                       {isLoadingInterests ? "Loading..." : "Select an option"}
                     </option>
                     {interestOptions?.map((option) => (
-                      <option key={option} value={option} className="text-gray-900">
-                        {interestDisplayLabels[option as InterestOption] || option}
+                      <option
+                        key={option}
+                        value={option}
+                        className="text-gray-900"
+                      >
+                        {interestDisplayLabels[option as InterestOption] ||
+                          option}
                       </option>
                     ))}
                   </select>
@@ -346,11 +397,17 @@ export default function WaitlistPage() {
                     stroke="currentColor"
                     strokeWidth={2}
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </div>
                 {!errors.interest && (
-                  <p className="mt-1 text-sm text-gray-500">Helps us build the ideal experience</p>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Helps us build the ideal experience
+                  </p>
                 )}
                 {errors.interest && (
                   <p className="mt-1 text-sm text-red-500">{errors.interest}</p>
