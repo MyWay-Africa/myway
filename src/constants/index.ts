@@ -11,7 +11,7 @@ export const APP_URL =
 /**
  * API configuration
  */
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "/api";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.myway.africa";
 export const API_TIMEOUT = 30000; // 30 seconds
 
 /**
