@@ -6,13 +6,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import {
-  waitlistApi,
-  useWaitlistInterests,
-  interestDisplayLabels,
-  type WaitlistPayload,
-  type InterestOption,
-} from "@/hooks/useWaitlist";
+import { waitlistApi, type WaitlistPayload } from "@/hooks/useWaitlist";
 
 type FormState = {
   firstName: string;
@@ -29,15 +23,10 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-const cityOptions = [
-  "Lagos",
-  "Abuja",
-  "Port Harcourt",
-  "Ibadan",
-  "Kano",
-  "Calabar",
-  "Other",
-];
+function isValidPhone(phone: string) {
+  const digits = phone.replace(/\D/g, "");
+  return digits.length >= 10 && digits.length <= 15;
+}
 
 export default function WaitlistPage() {
   const router = useRouter();
@@ -53,10 +42,6 @@ export default function WaitlistPage() {
 
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  // Fetch interest options from API
-  const { data: interestOptions, isLoading: isLoadingInterests } =
-    useWaitlistInterests();
 
   const joinWaitlistMutation = useMutation({
     mutationFn: waitlistApi.joinWaitlist,
@@ -77,8 +62,14 @@ export default function WaitlistPage() {
       nextErrors.email = "Please enter a valid email";
     }
 
-    if (!form.city) nextErrors.city = "Please select an option";
-    if (!form.interest) nextErrors.interest = "Please select an option";
+    if (!form.phone.trim() || !isValidPhone(form.phone)) {
+      nextErrors.phone = "Please enter a valid phone number";
+    }
+
+    if (!form.city.trim()) nextErrors.city = "Please enter your city";
+    if (!form.interest.trim()) {
+      nextErrors.interest = "Please tell us why you are interested";
+    }
 
     return nextErrors;
   };
@@ -94,8 +85,9 @@ export default function WaitlistPage() {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim(),
-      city: form.city,
-      interest: form.interest,
+      phone: form.phone.trim(),
+      city: form.city.trim(),
+      interest: form.interest.trim(),
     };
 
     joinWaitlistMutation.mutate(payload);
@@ -294,119 +286,53 @@ export default function WaitlistPage() {
               />
 
               <Input
-                label="Phone Number (Optional)"
-                placeholder="0000 000 000"
+                label="Phone Number"
+                placeholder="+2348012345678"
                 value={form.phone}
-                helperText="Optional. Only used to notify you at launch."
+                error={errors.phone}
+                helperText="We will use this for launch updates and access invites."
                 onChange={(e) =>
                   setForm((p) => ({ ...p, phone: e.target.value }))
                 }
               />
 
-              <div className="w-full">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Your City
-                </label>
-                <div className="relative">
-                  <select
-                    className={`
-                      w-full px-4 py-2 pr-10 appearance-none
-                      border rounded-lg bg-white text-gray-900
-                      transition-all duration-200
-                      focus:outline-none focus:ring-2 focus:ring-offset-0
-                      ${
-                        errors.city
-                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                      }
-                    `}
-                    value={form.city}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, city: e.target.value }))
-                    }
-                  >
-                    <option value="" className="text-gray-500">
-                      Select an option
-                    </option>
-                    {cityOptions.map((c) => (
-                      <option key={c} value={c} className="text-gray-900">
-                        {c}
-                      </option>
-                    ))}
-                  </select>
-                  <svg
-                    className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-                {errors.city && (
-                  <p className="mt-1 text-sm text-red-500">{errors.city}</p>
-                )}
-              </div>
+              <Input
+                label="Your City"
+                placeholder="Enter your city"
+                value={form.city}
+                error={errors.city}
+                onChange={(e) =>
+                  setForm((p) => ({ ...p, city: e.target.value }))
+                }
+              />
 
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Why Are You Interested?
                 </label>
-                <div className="relative">
-                  <select
-                    className={`
-                      w-full px-4 py-2 pr-10 appearance-none
-                      border rounded-lg bg-white text-gray-900
-                      transition-all duration-200
-                      focus:outline-none focus:ring-2 focus:ring-offset-0
-                      ${
-                        errors.interest
-                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                      }
-                    `}
-                    value={form.interest}
-                    onChange={(e) =>
-                      setForm((p) => ({ ...p, interest: e.target.value }))
+                <textarea
+                  className={`
+                    w-full px-4 py-3
+                    border rounded-lg bg-white text-gray-900
+                    transition-all duration-200
+                    focus:outline-none focus:ring-2 focus:ring-offset-0
+                    placeholder:text-gray-400 resize-none
+                    ${
+                      errors.interest
+                        ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     }
-                    disabled={isLoadingInterests}
-                  >
-                    <option value="" className="text-gray-500">
-                      {isLoadingInterests ? "Loading..." : "Select an option"}
-                    </option>
-                    {interestOptions?.map((option) => (
-                      <option
-                        key={option}
-                        value={option}
-                        className="text-gray-900"
-                      >
-                        {interestDisplayLabels[option as InterestOption] ||
-                          option}
-                      </option>
-                    ))}
-                  </select>
-                  <svg
-                    className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
+                  `}
+                  rows={4}
+                  placeholder="Tell us what makes MyWay useful for your airport trips"
+                  value={form.interest}
+                  onChange={(e) =>
+                    setForm((p) => ({ ...p, interest: e.target.value }))
+                  }
+                />
                 {!errors.interest && (
                   <p className="mt-1 text-sm text-gray-500">
-                    Helps us build the ideal experience
+                    Helps us understand the value you want most from MyWay
                   </p>
                 )}
                 {errors.interest && (

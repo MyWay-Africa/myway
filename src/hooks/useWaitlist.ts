@@ -8,10 +8,10 @@ import { api } from "@/services/api";
  */
 interface WaitlistApiResponse<T> {
   success: boolean;
-  statusCode: string;
+  statusCode?: string;
   message: string;
   data: T;
-  errors: null | unknown;
+  errors?: null | unknown;
 }
 
 /**
@@ -61,8 +61,20 @@ export type WaitlistPayload = {
   firstName: string;
   lastName: string;
   email: string;
+  phone: string;
   city: string;
   interest: InterestOption | string;
+};
+
+export type WaitlistUser = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  interest: string;
+  createdAt: string;
 };
 
 /**
@@ -190,13 +202,14 @@ export const waitlistApi = {
   /**
    * Join user waitlist
    */
-  joinWaitlist: async (payload: WaitlistPayload): Promise<string> => {
-    const response = await api.post<WaitlistApiResponse<string>>(
-      "/api/waitlist/join-user",
+  joinWaitlist: async (payload: WaitlistPayload): Promise<WaitlistUser> => {
+    const response = await api.post<WaitlistApiResponse<WaitlistUser>>(
+      "/api/waitlist/users",
       {
         firstName: payload.firstName,
         lastName: payload.lastName,
         email: payload.email,
+        phone: payload.phone,
         city: payload.city,
         interest: payload.interest,
       },

@@ -1,5 +1,4 @@
 import { API_BASE_URL, API_TIMEOUT } from "@/constants";
-import type { ApiResponse } from "@/types";
 
 /**
  * HTTP request options
@@ -41,6 +40,17 @@ async function fetchWithTimeout(
   }
 }
 
+function buildApiUrl(endpoint: string) {
+  if (/^https?:\/\//.test(endpoint)) return endpoint;
+
+  const baseUrl = API_BASE_URL.replace(/\/+$/, "");
+  const normalizedEndpoint = endpoint.startsWith("/")
+    ? endpoint
+    : `/${endpoint}`;
+
+  return `${baseUrl}${normalizedEndpoint}`;
+}
+
 /**
  * API client for making HTTP requests
  */
@@ -49,7 +59,7 @@ export const api = {
    * Make a GET request
    */
   async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithTimeout(buildApiUrl(endpoint), {
       ...options,
       method: "GET",
       headers: {
@@ -73,7 +83,7 @@ export const api = {
     data?: unknown,
     options?: RequestOptions
   ): Promise<T> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithTimeout(buildApiUrl(endpoint), {
       ...options,
       method: "POST",
       headers: {
@@ -98,7 +108,7 @@ export const api = {
     data?: unknown,
     options?: RequestOptions
   ): Promise<T> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithTimeout(buildApiUrl(endpoint), {
       ...options,
       method: "PUT",
       headers: {
@@ -123,7 +133,7 @@ export const api = {
     data?: unknown,
     options?: RequestOptions
   ): Promise<T> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithTimeout(buildApiUrl(endpoint), {
       ...options,
       method: "PATCH",
       headers: {
@@ -144,7 +154,7 @@ export const api = {
    * Make a DELETE request
    */
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    const response = await fetchWithTimeout(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetchWithTimeout(buildApiUrl(endpoint), {
       ...options,
       method: "DELETE",
       headers: {

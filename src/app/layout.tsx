@@ -112,7 +112,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${hankenGrotesk.variable} font-sans antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${hankenGrotesk.variable} font-sans antialiased`}
+      >
         <Providers>{children}</Providers>
       </body>
     </html>
