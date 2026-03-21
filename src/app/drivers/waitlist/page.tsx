@@ -8,19 +8,10 @@ import { useMutation } from "@tanstack/react-query";
 import { Button, Input } from "@/components/ui";
 import {
   waitlistApi,
-  useWaitlistYearsOfExperience,
   useWaitlistCarTypes,
-  useWaitlistNoticePeriods,
-  useWaitlistAvailabilities,
-  yearsOfExperienceDisplayLabels,
-  carTypeDisplayLabels,
-  noticePeriodDisplayLabels,
-  availabilityDisplayLabels,
+  useWaitlistDriverStartTimes,
+  useWaitlistYearsOfExperience,
   type DriverWaitlistPayload,
-  type YearsOfExperienceOption,
-  type CarTypeOption,
-  type NoticePeriodOption,
-  type AvailabilityOption,
 } from "@/hooks/useWaitlist";
 
 type FormState = {
@@ -32,15 +23,10 @@ type FormState = {
   yearsOfExperience: string;
   carOwner: string;
   carType: string;
-  noticePeriod: string;
-  availability: string;
+  startWhen: string;
 };
 
 type FieldErrors = Partial<Record<keyof FormState, string>>;
-
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
 
 const steps = [
   { number: 1, label: "Basic Info" },
@@ -48,12 +34,23 @@ const steps = [
   { number: 3, label: "Driver Readiness" },
 ];
 
-const cityOptions = ["Lagos", "Abuja", "Port Harcourt", "Ibadan", "Kano", "Calabar", "Other"];
+const cityOptions = [
+  "Lagos",
+  "Abuja",
+  "Port Harcourt",
+  "Ibadan",
+  "Kano",
+  "Calabar",
+  "Other",
+];
+
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
 export default function DriverWaitlistPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
-
   const [form, setForm] = useState<FormState>({
     firstName: "",
     lastName: "",
@@ -63,18 +60,17 @@ export default function DriverWaitlistPage() {
     yearsOfExperience: "",
     carOwner: "",
     carType: "",
-    noticePeriod: "",
-    availability: "",
+    startWhen: "",
   });
-
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  // Fetch options from API
-  const { data: yearsOptions, isLoading: isLoadingYears } = useWaitlistYearsOfExperience();
-  const { data: carTypeOptions, isLoading: isLoadingCarTypes } = useWaitlistCarTypes();
-  const { data: noticePeriodOptions, isLoading: isLoadingNoticePeriods } = useWaitlistNoticePeriods();
-  const { data: availabilityOptions, isLoading: isLoadingAvailabilities } = useWaitlistAvailabilities();
+  const { data: yearsOptions, isLoading: isLoadingYears } =
+    useWaitlistYearsOfExperience();
+  const { data: carTypeOptions, isLoading: isLoadingCarTypes } =
+    useWaitlistCarTypes();
+  const { data: startTimeOptions, isLoading: isLoadingStartTimes } =
+    useWaitlistDriverStartTimes();
 
   const joinDriverWaitlistMutation = useMutation({
     mutationFn: waitlistApi.joinDriverWaitlist,
@@ -88,11 +84,9 @@ export default function DriverWaitlistPage() {
 
     if (!form.firstName.trim()) nextErrors.firstName = "Please enter a valid name";
     if (!form.lastName.trim()) nextErrors.lastName = "Please enter a valid name";
-
     if (!form.email.trim() || !isValidEmail(form.email)) {
       nextErrors.email = "Please enter a valid email";
     }
-
     if (!form.city) nextErrors.city = "Please select an option";
 
     return nextErrors;
@@ -103,7 +97,9 @@ export default function DriverWaitlistPage() {
 
     if (!form.yearsOfExperience) nextErrors.yearsOfExperience = "Please select an option";
     if (!form.carOwner) nextErrors.carOwner = "Please select an option";
-    if (form.carOwner === "Yes" && !form.carType) nextErrors.carType = "Please select an option";
+    if (form.carOwner === "Yes" && !form.carType) {
+      nextErrors.carType = "Please select an option";
+    }
 
     return nextErrors;
   };
@@ -111,20 +107,14 @@ export default function DriverWaitlistPage() {
   const validateStep3 = (): FieldErrors => {
     const nextErrors: FieldErrors = {};
 
-    if (!form.availability) nextErrors.availability = "Please select an option";
-    if (!form.noticePeriod) nextErrors.noticePeriod = "Please select an option";
+    if (!form.startWhen) nextErrors.startWhen = "Please select an option";
 
     return nextErrors;
   };
 
   const handleNext = () => {
-    let nextErrors: FieldErrors = {};
-
-    if (currentStep === 1) {
-      nextErrors = validateStep1();
-    } else if (currentStep === 2) {
-      nextErrors = validateStep2();
-    }
+    const nextErrors =
+      currentStep === 1 ? validateStep1() : validateStep2();
 
     setErrors(nextErrors);
 
@@ -136,9 +126,10 @@ export default function DriverWaitlistPage() {
   const handleBack = () => {
     if (currentStep > 1) {
       setCurrentStep((prev) => prev - 1);
-    } else {
-      router.back();
+      return;
     }
+
+    router.back();
   };
 
   const onSubmit = (e: React.FormEvent) => {
@@ -153,12 +144,12 @@ export default function DriverWaitlistPage() {
       firstName: form.firstName.trim(),
       lastName: form.lastName.trim(),
       email: form.email.trim(),
+      phone: form.phone.trim() || undefined,
       city: form.city,
       yearsOfExperience: form.yearsOfExperience,
       carOwner: form.carOwner === "Yes",
       carType: form.carOwner === "Yes" ? form.carType : undefined,
-      noticePeriod: form.noticePeriod,
-      availability: form.availability,
+      startWhen: form.startWhen,
     };
 
     joinDriverWaitlistMutation.mutate(payload);
@@ -184,7 +175,7 @@ export default function DriverWaitlistPage() {
                 Predictable earnings.
               </h2>
               <p className="text-white/70 max-w-xl">
-                Earn more from airport rides — not random city chaos. Verified
+                Earn more from airport rides â€” not random city chaos. Verified
                 passengers. Clear pricing. Calm, professional trips.
               </p>
             </div>
@@ -204,21 +195,27 @@ export default function DriverWaitlistPage() {
                       stroke="currentColor"
                       strokeWidth={3}
                     >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
                     </svg>
                   </div>
                 </div>
               </div>
 
               <h1 className="text-3xl font-semibold text-gray-900 text-center mb-2">
-                🎉 You&apos;re on the Driver Waitlist
+                You&apos;re on the Driver Waitlist
               </h1>
               <p className="text-gray-500 text-center mb-10">
-                Thanks for signing up. You&apos;ll be among the first drivers invited when
-                we launch in Lagos.
+                Thanks for signing up. You&apos;ll be among the first drivers
+                invited when we launch in Lagos.
               </p>
 
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">What Happens Next</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                What Happens Next
+              </h2>
 
               <div className="border border-gray-200 rounded-xl p-5 space-y-4 mb-8">
                 {[
@@ -250,7 +247,13 @@ export default function DriverWaitlistPage() {
                   variant="dark"
                   size="xl"
                   className="w-full rounded-xl"
-                  onClick={() => router.push("/")}
+                  onClick={() =>
+                    window.open(
+                      "https://whatsapp.com/channel/0029Vb7URlx6buMF3tldya1G",
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                  }
                 >
                   Join Driver Community
                 </Button>
@@ -289,7 +292,7 @@ export default function DriverWaitlistPage() {
               Predictable earnings.
             </h2>
             <p className="text-white/70 max-w-xl">
-              Earn more from airport rides — not random city chaos. Verified
+              Earn more from airport rides â€” not random city chaos. Verified
               passengers. Clear pricing. Calm, professional trips.
             </p>
           </div>
@@ -297,35 +300,40 @@ export default function DriverWaitlistPage() {
 
         <div className="flex items-center justify-center px-6 py-12">
           <div className="w-full max-w-xl">
-            {/* Step Indicator */}
             <div className="flex items-center mb-8">
               {steps.map((step, index) => (
                 <div key={step.number} className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
                     <div
-                      className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step.number
+                      className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                        currentStep >= step.number
                           ? "bg-gray-900 text-white"
                           : "bg-gray-200 text-gray-500"
-                        }`}
+                      }`}
                     >
                       {step.number}
                     </div>
                     <span
-                      className={`text-sm font-medium ${currentStep >= step.number ? "text-gray-900" : "text-gray-400"
-                        }`}
+                      className={`text-sm font-medium ${
+                        currentStep >= step.number
+                          ? "text-gray-900"
+                          : "text-gray-400"
+                      }`}
                     >
                       {step.label}
                     </span>
                   </div>
                   <div
-                    className={`h-1 rounded-full ${index < steps.length - 1 ? "mr-2" : ""} ${currentStep >= step.number ? "bg-gray-900" : "bg-gray-200"
-                      }`}
+                    className={`h-1 rounded-full ${
+                      index < steps.length - 1 ? "mr-2" : ""
+                    } ${
+                      currentStep >= step.number ? "bg-gray-900" : "bg-gray-200"
+                    }`}
                   />
                 </div>
               ))}
             </div>
 
-            {/* Step 1: Basic Info */}
             {currentStep === 1 && (
               <>
                 <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-3">
@@ -348,14 +356,18 @@ export default function DriverWaitlistPage() {
                       placeholder="Enter your first name"
                       value={form.firstName}
                       error={errors.firstName}
-                      onChange={(e) => setForm((p) => ({ ...p, firstName: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, firstName: e.target.value }))
+                      }
                     />
                     <Input
                       label="Last Name"
                       placeholder="Enter your last name"
                       value={form.lastName}
                       error={errors.lastName}
-                      onChange={(e) => setForm((p) => ({ ...p, lastName: e.target.value }))}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, lastName: e.target.value }))
+                      }
                     />
                   </div>
 
@@ -364,39 +376,40 @@ export default function DriverWaitlistPage() {
                     placeholder="Enter your Email address"
                     value={form.email}
                     error={errors.email}
-                    onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, email: e.target.value }))
+                    }
                   />
 
                   <Input
                     label="Phone Number (Optional)"
-                    placeholder="0000 000 0000"
+                    placeholder="+2348012345678"
                     value={form.phone}
-                    onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, phone: e.target.value }))
+                    }
                   />
 
                   <div className="w-full">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      City
+                    </label>
                     <div className="relative">
                       <select
-                        className={`
-                          w-full px-4 py-2 pr-10 appearance-none
-                          border rounded-lg bg-white text-gray-900
-                          transition-all duration-200
-                          focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${errors.city
+                        className={`w-full px-4 py-2 pr-10 appearance-none border rounded-lg bg-white text-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                          errors.city
                             ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                             : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }
-                        `}
+                        }`}
                         value={form.city}
-                        onChange={(e) => setForm((p) => ({ ...p, city: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, city: e.target.value }))
+                        }
                       >
-                        <option value="" className="text-gray-500">
-                          Select an option
-                        </option>
-                        {cityOptions.map((c) => (
-                          <option key={c} value={c} className="text-gray-900">
-                            {c}
+                        <option value="">Select an option</option>
+                        {cityOptions.map((city) => (
+                          <option key={city} value={city}>
+                            {city}
                           </option>
                         ))}
                       </select>
@@ -407,7 +420,11 @@ export default function DriverWaitlistPage() {
                         stroke="currentColor"
                         strokeWidth={2}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                     {!errors.city && (
@@ -415,7 +432,9 @@ export default function DriverWaitlistPage() {
                         Select the city you&apos;ll drive in when MyWay launches.
                       </p>
                     )}
-                    {errors.city && <p className="mt-1 text-sm text-red-500">{errors.city}</p>}
+                    {errors.city && (
+                      <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
@@ -447,14 +466,14 @@ export default function DriverWaitlistPage() {
               </>
             )}
 
-            {/* Step 2: Driving Experience */}
             {currentStep === 2 && (
               <>
                 <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-3">
                   Your Driving Experience
                 </h1>
                 <p className="text-gray-500 mb-8">
-                  Just a quick snapshot so we know you&apos;re a good fit for airport rides.
+                  Just a quick snapshot so we know you&apos;re a good fit for
+                  airport rides.
                 </p>
 
                 <form
@@ -470,26 +489,26 @@ export default function DriverWaitlistPage() {
                     </label>
                     <div className="relative">
                       <select
-                        className={`
-                          w-full px-4 py-2 pr-10 appearance-none
-                          border rounded-lg bg-white text-gray-900
-                          transition-all duration-200
-                          focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${errors.yearsOfExperience
+                        className={`w-full px-4 py-2 pr-10 appearance-none border rounded-lg bg-white text-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                          errors.yearsOfExperience
                             ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                             : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }
-                        `}
+                        }`}
                         value={form.yearsOfExperience}
-                        onChange={(e) => setForm((p) => ({ ...p, yearsOfExperience: e.target.value }))}
+                        onChange={(e) =>
+                          setForm((p) => ({
+                            ...p,
+                            yearsOfExperience: e.target.value,
+                          }))
+                        }
                         disabled={isLoadingYears}
                       >
-                        <option value="" className="text-gray-500">
+                        <option value="">
                           {isLoadingYears ? "Loading..." : "Select an option"}
                         </option>
                         {yearsOptions?.map((option) => (
-                          <option key={option} value={option} className="text-gray-900">
-                            {yearsOfExperienceDisplayLabels[option as YearsOfExperienceOption] || option}
+                          <option key={option.value} value={option.value}>
+                            {option.label}
                           </option>
                         ))}
                       </select>
@@ -500,11 +519,17 @@ export default function DriverWaitlistPage() {
                         stroke="currentColor"
                         strokeWidth={2}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                     {errors.yearsOfExperience && (
-                      <p className="mt-1 text-sm text-red-500">{errors.yearsOfExperience}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.yearsOfExperience}
+                      </p>
                     )}
                   </div>
 
@@ -514,20 +539,30 @@ export default function DriverWaitlistPage() {
                     </label>
                     <div className="flex flex-wrap gap-4">
                       {["Yes", "No"].map((option) => (
-                        <label key={option} className="flex items-center gap-2 cursor-pointer">
+                        <label
+                          key={option}
+                          className="flex items-center gap-2 cursor-pointer"
+                        >
                           <input
                             type="radio"
                             name="carOwner"
                             value={option}
                             checked={form.carOwner === option}
-                            onChange={(e) => setForm((p) => ({ ...p, carOwner: e.target.value }))}
+                            onChange={(e) =>
+                              setForm((p) => ({
+                                ...p,
+                                carOwner: e.target.value,
+                              }))
+                            }
                             className="w-4 h-4 text-gray-900 border-gray-300 focus:ring-gray-900"
                           />
                           <span className="text-sm text-gray-700">{option}</span>
                         </label>
                       ))}
                     </div>
-                    {errors.carOwner && <p className="mt-1 text-sm text-red-500">{errors.carOwner}</p>}
+                    {errors.carOwner && (
+                      <p className="mt-1 text-sm text-red-500">{errors.carOwner}</p>
+                    )}
                   </div>
 
                   {form.carOwner === "Yes" && (
@@ -537,26 +572,23 @@ export default function DriverWaitlistPage() {
                       </label>
                       <div className="relative">
                         <select
-                          className={`
-                            w-full px-4 py-2 pr-10 appearance-none
-                            border rounded-lg bg-white text-gray-900
-                            transition-all duration-200
-                            focus:outline-none focus:ring-2 focus:ring-offset-0
-                            ${errors.carType
+                          className={`w-full px-4 py-2 pr-10 appearance-none border rounded-lg bg-white text-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                            errors.carType
                               ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                               : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                            }
-                          `}
+                          }`}
                           value={form.carType}
-                          onChange={(e) => setForm((p) => ({ ...p, carType: e.target.value }))}
+                          onChange={(e) =>
+                            setForm((p) => ({ ...p, carType: e.target.value }))
+                          }
                           disabled={isLoadingCarTypes}
                         >
-                          <option value="" className="text-gray-500">
+                          <option value="">
                             {isLoadingCarTypes ? "Loading..." : "Select an option"}
                           </option>
                           {carTypeOptions?.map((option) => (
-                            <option key={option} value={option} className="text-gray-900">
-                              {carTypeDisplayLabels[option as CarTypeOption] || option}
+                            <option key={option.value} value={option.value}>
+                              {option.label}
                             </option>
                           ))}
                         </select>
@@ -567,7 +599,11 @@ export default function DriverWaitlistPage() {
                           stroke="currentColor"
                           strokeWidth={2}
                         >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 9l-7 7-7-7"
+                          />
                         </svg>
                       </div>
                       {errors.carType && (
@@ -599,87 +635,40 @@ export default function DriverWaitlistPage() {
               </>
             )}
 
-            {/* Step 3: Driver Readiness */}
             {currentStep === 3 && (
               <>
                 <h1 className="text-3xl sm:text-4xl font-semibold text-gray-900 mb-3">
                   Driver Readiness
                 </h1>
                 <p className="text-gray-500 mb-8">
-                  Help us understand when you&apos;d be ready to start driving with MyWay.
+                  Help us understand when you&apos;d be ready to start driving
+                  with MyWay.
                 </p>
 
                 <form onSubmit={onSubmit} className="space-y-5">
-                  <div className="w-full">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      What is your availability?
-                    </label>
-                    <div className="relative">
-                      <select
-                        className={`
-                          w-full px-4 py-2 pr-10 appearance-none
-                          border rounded-lg bg-white text-gray-900
-                          transition-all duration-200
-                          focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${errors.availability
-                            ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                            : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }
-                        `}
-                        value={form.availability}
-                        onChange={(e) => setForm((p) => ({ ...p, availability: e.target.value }))}
-                        disabled={isLoadingAvailabilities}
-                      >
-                        <option value="" className="text-gray-500">
-                          {isLoadingAvailabilities ? "Loading..." : "Select an option"}
-                        </option>
-                        {availabilityOptions?.map((option) => (
-                          <option key={option} value={option} className="text-gray-900">
-                            {availabilityDisplayLabels[option as AvailabilityOption] || option}
-                          </option>
-                        ))}
-                      </select>
-                      <svg
-                        className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                    {errors.availability && (
-                      <p className="mt-1 text-sm text-red-500">{errors.availability}</p>
-                    )}
-                  </div>
-
                   <div className="w-full">
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       When can you start?
                     </label>
                     <div className="relative">
                       <select
-                        className={`
-                          w-full px-4 py-2 pr-10 appearance-none
-                          border rounded-lg bg-white text-gray-900
-                          transition-all duration-200
-                          focus:outline-none focus:ring-2 focus:ring-offset-0
-                          ${errors.noticePeriod
+                        className={`w-full px-4 py-2 pr-10 appearance-none border rounded-lg bg-white text-gray-900 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 ${
+                          errors.startWhen
                             ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                             : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                          }
-                        `}
-                        value={form.noticePeriod}
-                        onChange={(e) => setForm((p) => ({ ...p, noticePeriod: e.target.value }))}
-                        disabled={isLoadingNoticePeriods}
+                        }`}
+                        value={form.startWhen}
+                        onChange={(e) =>
+                          setForm((p) => ({ ...p, startWhen: e.target.value }))
+                        }
+                        disabled={isLoadingStartTimes}
                       >
-                        <option value="" className="text-gray-500">
-                          {isLoadingNoticePeriods ? "Loading..." : "Select an option"}
+                        <option value="">
+                          {isLoadingStartTimes ? "Loading..." : "Select an option"}
                         </option>
-                        {noticePeriodOptions?.map((option) => (
-                          <option key={option} value={option} className="text-gray-900">
-                            {noticePeriodDisplayLabels[option as NoticePeriodOption] || option}
+                        {startTimeOptions?.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
                           </option>
                         ))}
                       </select>
@@ -690,11 +679,15 @@ export default function DriverWaitlistPage() {
                         stroke="currentColor"
                         strokeWidth={2}
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
-                    {errors.noticePeriod && (
-                      <p className="mt-1 text-sm text-red-500">{errors.noticePeriod}</p>
+                    {errors.startWhen && (
+                      <p className="mt-1 text-sm text-red-500">{errors.startWhen}</p>
                     )}
                   </div>
 
