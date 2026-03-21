@@ -6,7 +6,11 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 
 import { Button, Input } from "@/components/ui";
-import { waitlistApi, type WaitlistPayload } from "@/hooks/useWaitlist";
+import {
+  waitlistApi,
+  useWaitlistInterests,
+  type WaitlistPayload,
+} from "@/hooks/useWaitlist";
 
 type FormState = {
   firstName: string;
@@ -19,6 +23,16 @@ type FormState = {
 
 type FieldErrors = Partial<Record<keyof FormState, string>>;
 
+const cityOptions = [
+  "Lagos",
+  "Abuja",
+  "Port Harcourt",
+  "Ibadan",
+  "Kano",
+  "Calabar",
+  "Other",
+];
+
 function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -30,6 +44,8 @@ function isValidPhone(phone: string) {
 
 export default function WaitlistPage() {
   const router = useRouter();
+  const { data: interestOptions, isLoading: isLoadingInterestOptions } =
+    useWaitlistInterests();
 
   const [form, setForm] = useState<FormState>({
     firstName: "",
@@ -66,9 +82,9 @@ export default function WaitlistPage() {
       nextErrors.phone = "Please enter a valid phone number";
     }
 
-    if (!form.city.trim()) nextErrors.city = "Please enter your city";
+    if (!form.city.trim()) nextErrors.city = "Please select an option";
     if (!form.interest.trim()) {
-      nextErrors.interest = "Please tell us why you are interested";
+      nextErrors.interest = "Please select an option";
     }
 
     return nextErrors;
@@ -182,7 +198,13 @@ export default function WaitlistPage() {
                   variant="dark"
                   size="xl"
                   className="w-full rounded-xl"
-                  onClick={() => router.push("/waitlist")}
+                  onClick={() =>
+                    window.open(
+                      "https://whatsapp.com/channel/0029Vb7URlx6buMF3tldya1G",
+                      "_blank",
+                      "noopener,noreferrer",
+                    )
+                  }
                 >
                   Join Our Early Community
                 </Button>
@@ -296,43 +318,114 @@ export default function WaitlistPage() {
                 }
               />
 
-              <Input
-                label="Your City"
-                placeholder="Enter your city"
-                value={form.city}
-                error={errors.city}
-                onChange={(e) =>
-                  setForm((p) => ({ ...p, city: e.target.value }))
-                }
-              />
+              <div className="w-full">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Your City
+                </label>
+                <div className="relative">
+                  <select
+                    className={`
+                      w-full px-4 py-3 pr-10 appearance-none
+                      border rounded-lg bg-white text-gray-900
+                      transition-all duration-200
+                      focus:outline-none focus:ring-2 focus:ring-offset-0
+                      ${
+                        errors.city
+                          ? "border-red-500 focus:ring-red-500 focus:border-red-500"
+                          : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      }
+                    `}
+                    value={form.city}
+                    onChange={(e) =>
+                      setForm((p) => ({ ...p, city: e.target.value }))
+                    }
+                  >
+                    <option value="" className="text-gray-500">
+                      Select an option
+                    </option>
+                    {cityOptions.map((city) => (
+                      <option key={city} value={city} className="text-gray-900">
+                        {city}
+                      </option>
+                    ))}
+                  </select>
+                  <svg
+                    className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                {!errors.city && (
+                  <p className="mt-1 text-sm text-gray-500">
+                    Select the city you&apos;ll use MyWay from most often.
+                  </p>
+                )}
+                {errors.city && (
+                  <p className="mt-1 text-sm text-red-500">{errors.city}</p>
+                )}
+              </div>
 
               <div className="w-full">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Why Are You Interested?
                 </label>
-                <textarea
+                <div className="relative">
+                  <select
                   className={`
-                    w-full px-4 py-3
+                    w-full px-4 py-3 pr-10 appearance-none
                     border rounded-lg bg-white text-gray-900
                     transition-all duration-200
                     focus:outline-none focus:ring-2 focus:ring-offset-0
-                    placeholder:text-gray-400 resize-none
                     ${
                       errors.interest
                         ? "border-red-500 focus:ring-red-500 focus:border-red-500"
                         : "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     }
                   `}
-                  rows={4}
-                  placeholder="Tell us what makes MyWay useful for your airport trips"
                   value={form.interest}
                   onChange={(e) =>
                     setForm((p) => ({ ...p, interest: e.target.value }))
                   }
-                />
+                  disabled={isLoadingInterestOptions}
+                >
+                  <option value="" className="text-gray-500">
+                    {isLoadingInterestOptions ? "Loading..." : "Select an option"}
+                  </option>
+                  {interestOptions?.map((option) => (
+                    <option
+                      key={option.value}
+                      value={option.value}
+                      className="text-gray-900"
+                    >
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  className="w-5 h-5 text-gray-400 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+                </div>
                 {!errors.interest && (
                   <p className="mt-1 text-sm text-gray-500">
-                    Helps us understand the value you want most from MyWay
+                    Select the main reason you&apos;re joining the waitlist.
                   </p>
                 )}
                 {errors.interest && (

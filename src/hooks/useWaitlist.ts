@@ -77,6 +77,11 @@ export type WaitlistUser = {
   createdAt: string;
 };
 
+export type UserInterestOption = {
+  label: string;
+  value: string;
+};
+
 /**
  * Driver waitlist join payload
  */
@@ -152,9 +157,9 @@ export const waitlistApi = {
   /**
    * Fetch interest options
    */
-  getInterests: async (): Promise<InterestOption[]> => {
-    const response = await api.get<WaitlistApiResponse<InterestOption[]>>(
-      "/api/waitlist/interests",
+  getInterests: async (): Promise<UserInterestOption[]> => {
+    const response = await api.get<WaitlistApiResponse<UserInterestOption[]>>(
+      "/api/waitlist/user-interest-options",
     );
     return response.data;
   },
